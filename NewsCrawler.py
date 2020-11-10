@@ -16,36 +16,31 @@ def get_text(titles, page_urls):
         for i in range(urls_len):
             print("%d/%d" % (i, urls_len))
             url_e = page_urls[i]
-            # text = titles[i] + '\n'
             text = titles[i]
             try:
                 req = urllib.request.urlopen(url_e)
             except Exception as e:
                 print("%s: %s" % (type(e), url_e))
+                continue
 
             req = req.read()
             bs = BeautifulSoup(req, 'html.parser')
             div = bs.find('div', class_='edittext')
-            # bs_p = BeautifulSoup(str(div), 'html.parser')
-            # p = bs_p.find_all('p')
-            # for each_p in p:
-            #     text = text + each_p.text + ' '
             text += div.get_text()
-            # text += '\n'
-            # writefile = open('news.txt', 'a', encoding='utf-8')
+            text += '\n'
             result_file.write(text)
-            # writefile.close()
 
 
 def crawler(port, first_url, current_url):
     page_urls = []
     titles = []
     while True:
-        # print(current_url)
+        print(current_url)
         try:
             req = urllib.request.urlopen(current_url)
         except Exception as e:
             print("%s: %s" % (type(e), current_url))
+            continue
         content_page = req.read()
         title_o = []
 
@@ -68,9 +63,6 @@ def crawler(port, first_url, current_url):
         for each_title in title_o:  # 将标题和url加入链表，并写入文档
             titles.append(''.join(each_title.text.split()))
             page_urls.append(server + each_title.get('href'))
-            # f.write(str(num) + '\t\t' + ''.join(each_title.text.split()) + '\t\t' + server + each_title.get(
-            #     'href') + '\n')
-            # num += 1
 
         if a_next is None:
             return titles, page_urls
@@ -82,7 +74,6 @@ def crawler(port, first_url, current_url):
 def main():
     for port in catalog:
         first_url = target + port + '.html'
-        # content_urls.append(current_url)
         current_url = first_url
         titles, page_urls = crawler(port, first_url, current_url)
         get_text(titles, page_urls)
